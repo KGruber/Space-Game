@@ -1,8 +1,9 @@
-/**
- * Module dependencies.
- */
-var fs = require('fs'),express = require('express'),
-	 mongoose = require('mongoose'), nodepath = require('path');
+var fs = require('fs')
+	, express = require('express')
+	, mongoose = require('mongoose')
+	, nodepath = require('path')
+	, coffeekup = require('coffeekup')
+	, controllerBootstrapper = require('./controllerBootstrapper')
 
 var path = __dirname;
 var app;
@@ -12,19 +13,18 @@ var app;
  */
 exports.boot = function(params){
 	
-  //Create our express instance
-  app = express.createServer();	
-	
-   // Import configuration
-  require(path + '/conf/configuration.js')(app,express);
-  
-  // Bootstrap application
-  bootApplication(app);
-  bootModels(app);
-  bootControllers(app);
-  
-  return app;
-  
+	//Create our express instance
+	app = express.createServer();	
+
+	// Import configuration
+	require(path + '/configuration/configuration.js')(app,express);
+
+	// Bootstrap application
+	bootApplication(app);
+	bootModels(app);
+	controllerBootstrapper.boot(app);
+
+	return app;
 };
 
 /**
@@ -34,82 +34,50 @@ exports.boot = function(params){
  */
 
 function bootApplication(app) {	 
-   
-   // launch
-  // app.use(express.logger({ format: ':method :url :status' }));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.cookieParser());
-  app.use(express.session({ secret: 'helloworld' }));
-  app.use(express.static(path + '/public'));  // Before router to enable dynamic routing
-  app.use(app.router);
 
-  // Example 500 page
-  app['error'](function(err, req, res){
-    console.log('Internal Server Error: ' + err.message);
-    res.render('500');
-  });
-  
-  // Example 404 page via simple Connect middleware
-  app.use(function(req, res){
-    res.render('404');
-  });
+	// Middleware
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
+	app.use(express.cookieParser());
+	app.use(express.static(path + '/public'));  // Before router to enable dynamic routing
+	app.use(app.router);
 
-  // Setup ejs views as default, with .html as the extension
-  app.set('views', path + '/views');
-  app.register('.html', require('ejs'));
-  app.set('view engine', 'html');
+	// Example 500 page
+	app['error'](function(err, req, res){
+		console.log('Internal Server Error: ' + err.message);
+		res.render('500');
+	});
 
-  // Some dynamic view helpers
-  app.dynamicHelpers({
-  
-	request: function(req){
-	   return req;
-	},
-	    
-	hasMessages: function(req){
-      return Object.keys(req.session.flash || {}).length;
-    },
+	// Example 404 page via simple Connect middleware
+	// app.use(function(req, res){
+		// res.render('404');
+	// });
 
-    messages: function(req){
-      return function(){
-        var msgs = req.flash();
-        console.log(msgs);
-        return Object.keys(msgs).reduce(function(arr, type){
-          return arr.concat(msgs[type]);
-        }, []);        
-      }
-    }
-  });
+	app.set('views', path + '/views');
+	app.register('.coffee', require('coffeekup').adapters.express);
+	app.set('view engine', 'coffee');
+
+	// Some dynamic view helpers
+	app.dynamicHelpers({
+
+		request: function(req){
+			return req;
+		}
+	});
 }
 
 //Bootstrap models 
 function bootModels(app) {
 	
-  fs.readdir(path + '/models', function(err, files){
-    if (err) throw err;
-    files.forEach(function(file){
-    	bootModel(app, file);
-    });
-  });
-  
-  // Connect to mongoose
-  mongoose.connect(app.set('db-uri'));
-  
-}
+	fs.readdir(path + '/models', function(err, files){
+		if (err) throw err;
+		files.forEach(function(file){
+			bootModel(app, file);
+		});
+	});
 
-// Bootstrap controllers
-function bootControllers(app) {
-  fs.readdir(path + '/controllers', function(err, files){
-    if (err) throw err;
-    files.forEach(function(file){    	
-    	// bootController(app, file);    		
-    });
-	
-
-  });
-  
-  require(path + '/controllers/AppController')(app);			// Include
+	// Connect to mongoose
+	mongoose.connect(app.set('db-uri'));
   
 }
 
@@ -117,25 +85,12 @@ function bootControllers(app) {
 function bootModel(app, file) {
 
     var name = file.replace('.js', ''),
-    	schema = require(path + '/models/'+ name);				// Include the mongoose file        
-    
-}
-
-// Load the controller, link to its view file from here
-function bootController(app, file) {
-	
-	var name = file.replace('.js', ''),
-    	controller = path + '/controllers/' + name,   // full controller to include
-    	template = name.replace('Controller','').toLowerCase();									// template folder for html - remove the ...Controller part.
-	
-	// Include the controller
-	// require(controller)(app,template);			// Include
-	
+    	schema = require(path + '/models/'+ name);
 }
 
 // allow normal node loading if appropriate
 if (!module.parent) {
-  exports.boot().listen(3000);
-  console.log("Express server %s listening on port %d", express.version, app.address().port)
+	exports.boot().listen(3000);
+	console.log("Express server %s in %s listening on port %d", express.version, app.settings.env, app.address().port)
 }
 

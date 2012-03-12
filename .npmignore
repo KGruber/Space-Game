@@ -1,3 +1,4 @@
 *.sock
 logs/*
 pids/*
+.git*
