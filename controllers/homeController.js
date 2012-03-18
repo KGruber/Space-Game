@@ -7,14 +7,15 @@ module.exports = {
 	},
 	
 	index: function(req, res, next) {
-		if(req.loggedIn)
+		if(req.isLoggedIn)
 			renderLoggedInView(req, res);
 		else
 			res.render('home/anonymous')
 	}
 };
 
-var renderLoggedInView = function(req, res)
-{
-	res.render('home/loggedIn', homeViewModelBuilder.build(req))
+var renderLoggedInView = function(req, res){
+	var loggedInHomeViewModelBuilder = require("./homeViewModels/loggedInHomeViewModelBuilder");
+
+	res.render('home/loggedIn', loggedInHomeViewModelBuilder.build(req));
 }

@@ -5,6 +5,7 @@ var fs = require('fs')
 	, coffeekup = require('coffeekup')
 	, controllerBootstrapper = require('./controllerBootstrapper')
 	, apiRequestBootstrapper = require('./apiRequestBootstrapper')
+	, authenticationRequestWrapper = require('./authenticationRequestWrapper')
 
 var path = __dirname;
 var app;
@@ -22,7 +23,7 @@ exports.boot = function(params){
 
 	// Bootstrap application
 	bootApplication(app);
-	apiRequestBootstrapper.boot(app)
+	apiRequestBootstrapper.boot(app);
 	controllerBootstrapper.boot(app);
 
 	return app;
@@ -42,8 +43,9 @@ function bootApplication(app) {
 	app.use(express.cookieParser());
 	app.use(express.session({ secret: app.set('sessionKey') }));
 	app.use(express.static(path + '/public'));  // Before router to enable dynamic routing
+	app.use(authenticationRequestWrapper); // Befoew routwe to force authentication before controllers act
 	app.use(app.router);
-	
+
 	// Example 500 page
 	app['error'](function(err, req, res){
 		console.log('Internal Server Error: ' + err.message);
@@ -75,6 +77,7 @@ if (!module.parent) {
 }
 
 // Generally a horrible idea...
-process.on('uncaughtException', function (err) {
-	console.log(err.stack);
-});
+// process.on('uncaughtException', function (err) {
+	// console.log(err)
+	// console.log(err.stack);
+// });

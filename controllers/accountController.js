@@ -1,5 +1,6 @@
 var account = require('../models/account/account')
 var session = require('../models/session')
+var authentication = require('../models/authentication')
 
 module.exports = {
 
@@ -27,14 +28,12 @@ module.exports = {
 				return;
 			}
 
-			account.login(req.body.email, req.body.password, function(err, token){
+			session.login(req, req.body.email, req.body.password, function(err, token){
 				if(err){
 					console.log(err)
 					res.render('account', {error: 'Unable to log in'});
 					return;
 				}
-				
-				session.update(req, req.body.email, token)
 				
 				res.redirect('/')
 			});

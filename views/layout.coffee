@@ -9,7 +9,6 @@ html ->
 
 body ->
 	header -> 
-		nav -> 
-			a href: '/account', -> 'Create Account'
-		(a href: '/logout', -> 'Logout ' + @name) if @name
+		partial('loggedInHeader', @player) if (@player && @player.isLoggedIn)
+		partial('anonymousHeader') if !(@player && @player.isLoggedIn)
 	@body
