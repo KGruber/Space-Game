@@ -1,5 +1,6 @@
 var account = require("../models/account/account")
 var session = require("../models/session")
+var loggedInHomeViewModelBuilder = require("./homeViewModels/loggedInHomeViewModelBuilder");
 
 module.exports = {
 
@@ -15,7 +16,12 @@ module.exports = {
 };
 
 var renderLoggedInView = function(req, res){
-	var loggedInHomeViewModelBuilder = require("./homeViewModels/loggedInHomeViewModelBuilder");
+	loggedInHomeViewModelBuilder.build(req, function(err, viewmodel){
+		if(err){
+			res.render('home/loggedIn', {error : err});
+			return;
+		}
 
-	res.render('home/loggedIn', loggedInHomeViewModelBuilder.build(req));
+		res.render('home/loggedIn', viewmodel);
+	})
 }

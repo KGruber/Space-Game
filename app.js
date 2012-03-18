@@ -77,7 +77,6 @@ if (!module.parent) {
 }
 
 // Generally a horrible idea...
-// process.on('uncaughtException', function (err) {
-	// console.log(err)
-	// console.log(err.stack);
-// });
+process.on('uncaughtException', function (err) {
+	console.log(err.stack);
+});
