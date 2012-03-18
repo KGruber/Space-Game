@@ -1,4 +1,5 @@
 var fs = require('fs')
+var homeController = require('./controllers/homeController')
 
 module.exports = function(app) {
 	
@@ -18,20 +19,19 @@ module.exports = function(app) {
 	app.get("/:controller/:id/:action", router);		// Show edit
 	app.put("/:controller/:id", router);				// Update
 	app.del("/:controller/:id", router);				// Delete	
-	
 }
 
-///
 function router(req, res, next) {
 
 	var controller = req.params.controller ? req.params.controller : '';
 	var action = req.params.action ? req.params.action : '';
+	var id = req.params.id ? req.params.id : ''
 	var method = req.method.toLowerCase();
 	var fn = 'index';
 	
 	// Default route
 	if(controller.length == 0) {
-		index(req,res,next);
+		homeController.index(req, res, next);
 		return;
 	}		
 	
@@ -39,7 +39,7 @@ function router(req, res, next) {
 		case 'get':
 			if(action.length > 0) {
 				fn = action;
-			} else {
+			} else if(id.length > 0) {
 				fn = 'show';
 			}
 			break;
@@ -65,9 +65,4 @@ function router(req, res, next) {
 		res.render('404');
 		throw(e)
 	}
-};
-
-
-function index(req, res, next) {
-	res.render('home')
 };

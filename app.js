@@ -4,6 +4,7 @@ var fs = require('fs')
 	, nodepath = require('path')
 	, coffeekup = require('coffeekup')
 	, controllerBootstrapper = require('./controllerBootstrapper')
+	, apiRequestBootstrapper = require('./apiRequestBootstrapper')
 
 var path = __dirname;
 var app;
@@ -21,7 +22,7 @@ exports.boot = function(params){
 
 	// Bootstrap application
 	bootApplication(app);
-	bootModels(app);
+	apiRequestBootstrapper.boot(app)
 	controllerBootstrapper.boot(app);
 
 	return app;
@@ -39,9 +40,10 @@ function bootApplication(app) {
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(express.cookieParser());
+	app.use(express.session({ secret: app.set('sessionKey') }));
 	app.use(express.static(path + '/public'));  // Before router to enable dynamic routing
 	app.use(app.router);
-
+	
 	// Example 500 page
 	app['error'](function(err, req, res){
 		console.log('Internal Server Error: ' + err.message);
@@ -66,31 +68,13 @@ function bootApplication(app) {
 	});
 }
 
-//Bootstrap models 
-function bootModels(app) {
-	
-	fs.readdir(path + '/models', function(err, files){
-		if (err) throw err;
-		files.forEach(function(file){
-			bootModel(app, file);
-		});
-	});
-
-	// Connect to mongoose
-	mongoose.connect(app.set('db-uri'));
-  
-}
-
-// simplistic model support
-function bootModel(app, file) {
-
-    var name = file.replace('.js', ''),
-    	schema = require(path + '/models/'+ name);
-}
-
 // allow normal node loading if appropriate
 if (!module.parent) {
 	exports.boot().listen(3000);
 	console.log("Express server %s in %s listening on port %d", express.version, app.settings.env, app.address().port)
 }
 
+// Generally a horrible idea...
+process.on('uncaughtException', function (err) {
+	console.log(err.stack);
+});

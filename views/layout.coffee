@@ -8,4 +8,8 @@ html ->
 	#script src: '/js/less.js'
 
 body ->
+	header -> 
+		nav -> 
+			a href: '/account', -> 'Create Account'
+		(a href: '/logout', -> 'Logout ' + @name) if @name
 	@body
