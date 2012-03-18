@@ -72,7 +72,8 @@ function bootApplication(app) {
 
 // allow normal node loading if appropriate
 if (!module.parent) {
-	exports.boot().listen(3000);
+	var port = process.env.PORT || 3000;
+	exports.boot().listen(port);
 	console.log("Express server %s in %s listening on port %d", express.version, app.settings.env, app.address().port)
 }
 
