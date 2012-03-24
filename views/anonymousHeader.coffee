@@ -1,3 +1,4 @@
-h1 -> 'Space Game'
+h1 -> 'Space game'
 nav -> 
-	(a href: '/account', -> 'Create Account')
+	(a href: '/account', -> 'Create account')
+	(a href: '/login', id: 'Login', -> 'Log in')

@@ -1,22 +1,34 @@
 var session = require("../models/session")
 
-module.exports = {
+var logInViewModelBuilder = require("./loginViewModels/loginViewModel");
 
-	init: function(app, template) {
-	},
+module.exports = {
 	
 	index: function(req, res, next) {
-		res.render("login")
+		renderLoginPage(req, res);
 	},
 	
 	create: function(req, res, next){
 		session.login(req, req.body.email, req.body.password, function(err){
 			if(err){
-				res.render("login")
-				return
+				renderLoginPage(req, res, err);
+				return;
 			}
 			
-			res.redirect("/")
+			res.redirect("/");
 		});
+	},
+	
+	loadForm: function(req, res, next){
+		logInViewModelBuilder.build("", "", function(err, viewModel){
+			res.partial("login", viewModel)
+		})
 	}
 };
+
+
+function renderLoginPage(req, res, err){
+	logInViewModelBuilder.build(req.body.email, err, function(err, viewModel){
+		res.render("login", viewModel)
+	})
+}

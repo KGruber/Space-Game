@@ -1,6 +1,14 @@
-h1 -> 'Login'
+h1 -> @loginHeader
 div @error if @error?
-partial 'loginForm'
+form action: '/login', method: 'post', ->
+	div ->
+		label for: 'Email', @emailFieldName
+		input id:'Email', name:'email', value:@email || ''
+	div ->
+		label for: 'Password', @passwordFieldName
+		input type: 'password', id:'Password', name:'password'
+	div ->
+		button @loginHeader
 p -> 
-	text 'Don\'t have an account? '
-	a href: '/account', -> 'Create one'
+	text @createText
+	a href: '/account', -> @createLink

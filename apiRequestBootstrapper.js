@@ -4,7 +4,7 @@ module.exports.boot = function (app){
 
 	console.log("Loading service endpoint from " + app.set('spaceGameEndpoint'))
 
-	//Create global Remote object so that it can be inited asynch
+	//Create global "Remote" object so that it can be used by the process later
 	Remote = {};
 
 	var apiUrl = app.set('spaceGameEndpoint')
@@ -64,7 +64,7 @@ var addServiceCommand = function(currentServiceName, currentCommandName, current
 		var validationResult = this.validateRequest(request, currentCommand.request)
 		if(validationResult.hasErrors)
 		{
-			callback("Valdidation Errors")
+			callback(validationResult.errors[0]);
 			return;
 		}
 		
@@ -108,7 +108,7 @@ Service.prototype.post = function(serviceRequest, command, callback){
 		headers: {'content-type' : 'application/json'}
 	};
 	
-	console.log([command, serviceRequest])
+	//Logger.log([command, serviceRequest], Logger.info, Logger.development)
 
 	var req = http.request(options, function(res) {
 		res.setEncoding('utf8');

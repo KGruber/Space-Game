@@ -14,10 +14,7 @@ module.exports.boot = function(app){
 }
 
 function bootController(app, file) {
-	
 	var name = file.replace('.js', ''),
     	controller = path + '/controllers/' + name,
     	template = name.replace('Controller','').toLowerCase();
-	
-	//require(controller).init(app, template);
 }

@@ -1,5 +1,3 @@
-var account = require("../models/account/account")
-var session = require("../models/session")
 var loggedInHomeViewModelBuilder = require("./homeViewModels/loggedInHomeViewModelBuilder");
 
 module.exports = {

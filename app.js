@@ -43,7 +43,7 @@ function bootApplication(app) {
 	app.use(express.cookieParser());
 	app.use(express.session({ secret: app.set('sessionKey') }));
 	app.use(express.static(path + '/public'));  // Before router to enable dynamic routing
-	app.use(authenticationRequestWrapper); // Befoew routwe to force authentication before controllers act
+	app.use(authenticationRequestWrapper); // Before route to force authentication before controllers act
 	app.use(app.router);
 
 	// Example 500 page

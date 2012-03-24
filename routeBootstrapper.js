@@ -2,21 +2,13 @@ var fs = require('fs')
 var homeController = require('./controllers/homeController')
 
 module.exports = function(app) {
-	
-	// app.get("/favicon.ico", function() {}); // Required if you delete the favicon.ico from public
-	
-	// Plural
-	app.get("/:controller?", router);				        // Index
-	app.get("/:controller.:format?", router);				// Index
-	app.get("/:controller/:from-:to.:format?", router);		// Index
-	
-	// Plural Create & Delete
+
+	app.get("/:controller?", router);			// Index
+
 	app.post("/:controller", router);			// Create
-	app.del("/:controller", router);   			// Delete all
+	app.del("/:controller", router);			// Delete all
 	
-	// Singular - different variable to clarify routing
-	app.get("/:controller/:id.:format?", router);  	// To support controller/index	
-	app.get("/:controller/:id/:action", router);		// Show edit
+	app.get("/:controller/:action?/:id", router);		// Show edit
 	app.put("/:controller/:id", router);				// Update
 	app.del("/:controller/:id", router);				// Delete	
 }
@@ -55,9 +47,9 @@ function router(req, res, next) {
 	}
 		
 	try {
-		var controllerLibrary = require('./controllers/' + controller.toLowerCase() + 'Controller');			
-		if(typeof controllerLibrary[fn] === 'function') {
-			controllerLibrary[fn](req,res,next);		
+		var controller = require('./controllers/' + controller.toLowerCase() + 'Controller');			
+		if(typeof controller[fn] === 'function') {
+			controller[fn](req,res,next);		
 		} else {
 			res.render('404');
 		}	
