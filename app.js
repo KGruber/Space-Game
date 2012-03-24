@@ -49,6 +49,7 @@ function bootApplication(app) {
 	// Example 500 page
 	app['error'](function(err, req, res){
 		console.log('Internal Server Error: ' + err.message);
+		console.log(err.stack);
 		res.render('500');
 	});
 

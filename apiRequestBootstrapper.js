@@ -86,8 +86,8 @@ Service.prototype.validateRequest = function(request, modelRequest){
 	
 	for(var fieldName in request)
 	{
-		var rules = request[fieldName]
-		var field = modelRequest[fieldName]
+		var rules = modelRequest[fieldName]
+		var field = request[fieldName]
 		if(rules.required && !(field && field.length > 0))
 		{
 			result.errors.push(fieldName + " is required");
