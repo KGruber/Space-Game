@@ -28,6 +28,7 @@ module.exports.renew = function(req, callback){
 			{
 				req.isLoggedIn = false;
 				clearSession(req);
+				callback(err);
 				return;
 			}
 			

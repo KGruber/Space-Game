@@ -74,7 +74,7 @@ function bootApplication(app) {
 if (!module.parent) {
 	var port = process.env.PORT || 3000;
 	exports.boot().listen(port);
-	console.log("Express server %s in %s listening on port %d", express.version, app.settings.env, app.address().port)
+	console.log("Express server %s in %s listening on port %d", express.version, app.settings.env, port)
 }
 
 // Generally a horrible idea...
