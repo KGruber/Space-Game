@@ -11,8 +11,8 @@ Example Node.js application that uses the Space Game API located here: http://ge
 ### You need to manually install: 
 
   - [Node.js](http://nodejs.org/): Amazing javascript asynchronous IO library, install manually.
+    - NPM (http://npmjs.org/) is now installed with Node, it is used to install the site's dependencies
   - [MongoDB](http://www.mongodb.org): NoSQL Database, install manually.
-  - [NPM](http://npmjs.org/): Node package manager, used to install the remaining.
 
 ### And then install via NPM: 
 
