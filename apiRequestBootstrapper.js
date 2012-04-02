@@ -67,8 +67,11 @@ var addServiceCommand = function(currentServiceName, currentCommandName, current
 			callback(validationResult.errors[0]);
 			return;
 		}
-		
-		this.post(request, currentServiceName + '/' + currentCommandName, callback);
+
+		if(currentCommand.method == "post")
+			this.post(request, currentServiceName + '/' + currentCommandName, callback);
+		else
+			this.get(request, currentServiceName + '/' + currentCommandName, callback);
 	}
 }
 
@@ -96,6 +99,34 @@ Service.prototype.validateRequest = function(request, modelRequest){
 	}
 	
 	return result;
+}
+
+Service.prototype.get = function(serviceRequest, command, callback){
+	var options = {
+		host: this.url,
+		port: this.port,
+		path: "/" + command,
+		method: 'get'
+	};
+	
+	var req = http.get(options, function(res) {
+		var data = "";
+		res.setEncoding('utf8');
+
+		res.on('data', function (chunk) {
+			data += chunk;
+		});
+
+		res.on('end', function(){
+			data = JSON.parse(data)
+			
+			if(data.success)
+				callback(null, data);
+			else
+				callback(condenseErrors(data.error), data);
+				
+		});
+	});
 }
 
 Service.prototype.post = function(serviceRequest, command, callback){
