@@ -5,7 +5,7 @@ var objectOverviewViewModelBuilder = require('./objectOverviewViewModelBuilder')
 module.exports.build = function(req, callback){
 
 	async.parallel({
-		objects : function(asynchCallback){ objectOverviewViewModelBuilder.build(req, asynchCallback) },
-		player : function(asynchCallback){ loggedInUserViewModelBuilder.build(req, asynchCallback) }
+		objects : function(asyncCallback){ objectOverviewViewModelBuilder.build(req, asyncCallback) },
+		player : function(asyncCallback){ loggedInUserViewModelBuilder.build(req, asyncCallback) }
 	}, callback);
 };
