@@ -1,4 +1,4 @@
-h1 -> 'Create Account'
+h2 -> 'Create Account'
 div @error if @error?
 form action: '/account', method: 'post', ->
 	div ->

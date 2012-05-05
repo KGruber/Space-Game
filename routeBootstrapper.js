@@ -1,12 +1,12 @@
-var fs = require('fs')
-var homeController = require('./controllers/homeController')
+var homeController = require('./controllers/homeController');
 
 module.exports = function(app) {
-
 	app.get("/:controller?", router);			// Index
 
 	app.post("/:controller", router);			// Create
+	app.put("/:controller", router);
 	app.del("/:controller", router);			// Delete all
+
 	
 	app.get("/:controller/:action?/:id", router);		// Show edit
 	app.put("/:controller/:id", router);				// Update
@@ -14,7 +14,6 @@ module.exports = function(app) {
 }
 
 function router(req, res, next) {
-
 	var controller = req.params.controller ? req.params.controller : '';
 	var action = req.params.action ? req.params.action : '';
 	var id = req.params.id ? req.params.id : ''

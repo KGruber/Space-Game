@@ -1,10 +1,10 @@
-var session = require('./models/session')
+var session = require('./models/session');
 
 module.exports = function (req, res, next){
 	session.renew(req, function(err){
 		if(err)
-			res.redirect('/')
+			res.redirect('/');
 		else
 			next();
 	});
-}
+};

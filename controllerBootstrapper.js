@@ -11,7 +11,7 @@ module.exports.boot = function(app){
 			bootController(app, file);
 		});
 	});
-}
+};
 
 function bootController(app, file) {
 	var name = file.replace('.js', ''),

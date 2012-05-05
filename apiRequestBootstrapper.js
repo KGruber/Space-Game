@@ -19,9 +19,15 @@ module.exports.boot = function (app){
 
 	var req = http.request(options, function(res) {
 		res.setEncoding('utf8');
+		var data = '';
+		
 		res.on('data', function (chunk) {
+			data += chunk;
+		});
+		
+		res.on('end', function () {
 			console.log('  Successfully pulled down service endpoint');
-			buildRequestModels(apiUrl, apiPort, JSON.parse(chunk));
+			buildRequestModels(apiUrl, apiPort, JSON.parse(data));
 		});
 	});
 
@@ -56,7 +62,7 @@ var buildRequestModels = function (apiUrl, apiPort, services){
 
 var addServiceCommand = function(currentServiceName, currentCommandName, currentCommand){
 	
-	console.log("      Creating " + currentServiceName + "." + currentCommandName)			
+	console.log("      Creating " + currentCommand.method + " to " + currentServiceName + "." + currentCommandName)			
 	//Example usage for token service: Remote.token.create(request, callback)
 	Remote[currentServiceName][currentCommandName] = function(request, callback)
 	{
@@ -67,11 +73,11 @@ var addServiceCommand = function(currentServiceName, currentCommandName, current
 			callback(validationResult.errors[0]);
 			return;
 		}
-
+		
 		if(currentCommand.method == "post")
-			this.post(request, currentServiceName + '/' + currentCommandName, callback);
+			this.postRequest(request, currentServiceName + '/' + currentCommandName, callback);
 		else
-			this.get(request, currentServiceName + '/' + currentCommandName, callback);
+			this.getRequest(request, currentServiceName + '/' + currentCommandName, callback);
 	}
 }
 
@@ -101,15 +107,23 @@ Service.prototype.validateRequest = function(request, modelRequest){
 	return result;
 }
 
-Service.prototype.get = function(serviceRequest, command, callback){
+Service.prototype.getRequest = function(serviceRequest, command, callback){
+	var path = "/" + command + "?"
+	for(var param in serviceRequest)
+	{
+		path += param + "=" + serviceRequest[param];
+	}
+	
 	var options = {
 		host: this.url,
 		port: this.port,
-		path: "/" + command,
+		path: path,
 		method: 'get'
 	};
 	
-	var req = http.get(options, function(res) {
+	//Logger.log([path], Logger.info, Logger.development)
+	
+	http.get(options, function(res) {
 		var data = "";
 		res.setEncoding('utf8');
 
@@ -118,18 +132,23 @@ Service.prototype.get = function(serviceRequest, command, callback){
 		});
 
 		res.on('end', function(){
-			data = JSON.parse(data)
-			
-			if(data.success)
-				callback(null, data);
-			else
-				callback(condenseErrors(data.error), data);
+			try {
+				data = JSON.parse(data)
 				
+				if(data.success)
+					callback(null, data);
+				else
+					callback(condenseErrors(data.error), data);
+			}
+			catch(err){
+				console.log([err, options]);
+				callback("Fatal error while calling service.")
+			}	
 		});
 	});
 }
 
-Service.prototype.post = function(serviceRequest, command, callback){
+Service.prototype.postRequest = function(serviceRequest, command, callback){
 	
 	var options = {
 		host: this.url,
